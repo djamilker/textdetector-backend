@@ -5,7 +5,7 @@ from transformers import pipeline
 app = Flask(__name__)
 CORS(app, origins=["https://www.textdetectorai.online", "https://textdetectorai.online"])
 
-model = pipeline("text-classification", model="protectai/deberta-v3-small-prompt-injection-v2")
+model = pipeline("text-classification", model="roberta-base-openai-detector")
 
 @app.route("/predict", methods=["POST"])
 def predict():
