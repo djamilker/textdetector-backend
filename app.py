@@ -3,9 +3,10 @@ from flask_cors import CORS
 from transformers import pipeline
 
 app = Flask(__name__)
-CORS(app, origins=["https://www.textdetectorai.online", "https://textdetectorai.online"])
+CORS(app)  # TEMP: allow all origins for now
 
 model = pipeline("text-classification", model="roberta-base-openai-detector")
+
 
 @app.route("/predict", methods=["POST"])
 def predict():
