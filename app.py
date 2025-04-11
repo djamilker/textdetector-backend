@@ -1,27 +1,18 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from transformers import pipeline
 import os
 
 app = Flask(__name__)
-
-# EXPLICIT CORS ALLOWANCE
-CORS(app, resources={r"/predict": {"origins": [
-    "https://textdetectorai.online",
-    "https://www.textdetectorai.online"
-]}})
+CORS(app)  # Just in case, but the decorator is what really fixes it
 
 model = pipeline("text-classification", model="roberta-base-openai-detector")
 
 @app.route("/predict", methods=["POST", "OPTIONS"])
+@cross_origin(origins=["https://textdetectorai.online", "https://www.textdetectorai.online"])
 def predict():
     if request.method == "OPTIONS":
-        # CORS preflight response
-        response = jsonify({})
-        response.headers.add("Access-Control-Allow-Origin", request.headers.get("Origin"))
-        response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
-        response.headers.add("Access-Control-Allow-Methods", "POST,OPTIONS")
-        return response
+        return jsonify({}), 200
 
     try:
         data = request.get_json()
@@ -32,13 +23,9 @@ def predict():
         result = model(text)[0]
         label = result["label"]
         score = round(result["score"] * 100, 2)
-        response = jsonify({"label": label, "confidence": score})
-        response.headers.add("Access-Control-Allow-Origin", request.headers.get("Origin"))
-        return response
+        return jsonify({"label": label, "confidence": score})
     except Exception as e:
-        response = jsonify({"error": str(e)})
-        response.headers.add("Access-Control-Allow-Origin", request.headers.get("Origin"))
-        return response, 500
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/", methods=["GET"])
 def home():
