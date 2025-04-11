@@ -3,7 +3,7 @@ from flask_cors import CORS
 from transformers import pipeline
 
 app = Flask(__name__)
-CORS(app, resources={r"/predict": {"origins": "*"}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": ["https://www.textdetectorai.online", "https://textdetectorai.online"]}}, supports_credentials=True)
 
 model = pipeline("text-classification", model="roberta-base-openai-detector")
 
